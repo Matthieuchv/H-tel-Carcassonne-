@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hôtel des Remparts — Carcassonne</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --stone:    #2C1810;
+      --gold:     #C9A96E;
+      --gold-lt:  #E8D5B0;
+      --ivory:    #F7F3EE;
+      --slate:    #6B7280;
+      --ink:      #1A1009;
+      --warm-mid: #8C6D52;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--ivory);
+      color: var(--stone);
+      font-size: 16px;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.2rem 3rem;
+      background: transparent;
+      transition: background 0.4s, backdrop-filter 0.4s;
+    }
+    nav.scrolled {
+      background: rgba(247,243,238,0.94);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--gold-lt);
+    }
+    .nav-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.1rem;
+      font-weight: 400;
+      letter-spacing: 0.12em;
+      color: var(--ivory);
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: color 0.4s;
+    }
+    nav.scrolled .nav-logo { color: var(--stone); }
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: 0.75rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(247,243,238,0.8);
+      text-decoration: none;
+      font-weight: 400;
+      transition: color 0.3s;
+    }
+    nav.scrolled .nav-links a { color: var(--slate); }
+    .nav-links a:hover { color: var(--gold); }
+    nav.scrolled .nav-links a:hover { color: var(--gold); }
+    .nav-cta {
+      font-size: 0.72rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      border: 1px solid rgba(201,169,110,0.6);
+      color: var(--gold) !important;
+      padding: 0.5rem 1.2rem;
+      border-radius: 1px;
+      transition: all 0.3s !important;
+    }
+    .nav-cta:hover { background: var(--gold) !important; color: var(--ink) !important; }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative;
+      height: 100vh;
+      min-height: 600px;
+      background: var(--ink);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+    /* Gradient sky */
+    .hero-sky {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(170deg, #0d0806 0%, #261408 40%, #3d1f0a 70%, #5a2e0d 100%);
+    }
+    /* Stars */
+    .hero-stars {
+      position: absolute;
+      inset: 0;
+    }
+    /* Silhouette des remparts */
+    .hero-ramparts {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      width: 100%;
+    }
+    .hero-content {
+      position: relative;
+      z-index: 10;
+      text-align: center;
+      padding: 2rem;
+    }
+    .hero-eyebrow {
+      font-size: 0.7rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--gold);
+      font-weight: 400;
+      margin-bottom: 1.5rem;
+    }
+    .hero-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(3.5rem, 8vw, 7rem);
+      font-weight: 300;
+      color: var(--ivory);
+      line-height: 1.05;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.3rem;
+    }
+    .hero-title em {
+      font-style: italic;
+      color: var(--gold-lt);
+    }
+    .hero-subtitle {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1rem, 2.5vw, 1.5rem);
+      font-weight: 300;
+      font-style: italic;
+      color: rgba(247,243,238,0.55);
+      letter-spacing: 0.04em;
+      margin-bottom: 2.8rem;
+    }
+    .hero-btn {
+      display: inline-block;
+      font-size: 0.72rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--ink);
+      background: var(--gold);
+      padding: 1rem 2.5rem;
+      text-decoration: none;
+      font-weight: 500;
+      border-radius: 1px;
+      transition: background 0.3s, transform 0.2s;
+    }
+    .hero-btn:hover { background: var(--gold-lt); transform: translateY(-1px); }
+    .hero-scroll {
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      color: rgba(247,243,238,0.4);
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+    .scroll-line {
+      width: 1px;
+      height: 40px;
+      background: linear-gradient(to bottom, rgba(201,169,110,0.6), transparent);
+      animation: scrollAnim 2s ease-in-out infinite;
+    }
+    @keyframes scrollAnim {
+      0%, 100% { opacity: 0.4; transform: scaleY(1); }
+      50% { opacity: 1; transform: scaleY(1.1); }
+    }
+
+    /* ── INTRO ── */
+    .intro {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 7rem 2rem 5rem;
+      text-align: center;
+    }
+    .section-label {
+      font-size: 0.68rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--gold);
+      font-weight: 500;
+      display: block;
+      margin-bottom: 1.5rem;
+    }
+    .intro h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 300;
+      line-height: 1.2;
+      margin-bottom: 1.8rem;
+      color: var(--stone);
+    }
+    .intro h2 em { font-style: italic; color: var(--warm-mid); }
+    .intro p {
+      color: var(--slate);
+      font-size: 1rem;
+      line-height: 1.85;
+      max-width: 580px;
+      margin: 0 auto;
+    }
+    .gold-rule {
+      width: 50px;
+      height: 1px;
+      background: var(--gold);
+      margin: 2.5rem auto 0;
+    }
+
+    /* ── ROOMS ── */
+    .rooms-section {
+      background: var(--stone);
+      padding: 6rem 2rem;
+    }
+    .rooms-header {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+    .rooms-header h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2.2rem, 4vw, 3.2rem);
+      font-weight: 300;
+      color: var(--ivory);
+      margin-top: 1rem;
+    }
+    .rooms-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .room-card {
+      background: #221109;
+      padding: 3rem 2.5rem;
+      position: relative;
+      transition: background 0.3s;
+      cursor: default;
+    }
+    .room-card:hover { background: #2e160b; }
+    .room-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 2.5rem;
+      width: 30px; height: 2px;
+      background: var(--gold);
+    }
+    .room-icon {
+      font-size: 1.8rem;
+      margin-bottom: 1.5rem;
+      display: block;
+    }
+    .room-card h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.5rem;
+      font-weight: 400;
+      color: var(--ivory);
+      margin-bottom: 0.8rem;
+    }
+    .room-card p {
+      color: rgba(247,243,238,0.5);
+      font-size: 0.88rem;
+      line-height: 1.75;
+      margin-bottom: 1.8rem;
+    }
+    .room-price {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.1rem;
+      color: var(--gold);
+      font-style: italic;
+    }
+    .room-price span { font-size: 0.7rem; letter-spacing: 0.1em; color: rgba(201,169,110,0.6); font-style: normal; font-family: 'Inter', sans-serif; }
+
+    /* ── FEATURES ── */
+    .features {
+      padding: 7rem 2rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .features-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: center;
+    }
+    .features-text h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2rem, 3.5vw, 2.8rem);
+      font-weight: 300;
+      line-height: 1.25;
+      margin: 1rem 0 1.5rem;
+    }
+    .features-text h2 em { font-style: italic; color: var(--warm-mid); }
+    .features-text p { color: var(--slate); font-size: 0.95rem; line-height: 1.85; margin-bottom: 2rem; }
+    .feature-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+    .feature-list li {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      font-size: 0.88rem;
+      color: var(--slate);
+    }
+    .feature-list li::before {
+      content: '';
+      width: 20px;
+      height: 1px;
+      background: var(--gold);
+      flex-shrink: 0;
+    }
+    .features-visual {
+      display: grid;
+      grid-template-rows: auto auto;
+      gap: 1rem;
+    }
+    .feat-card {
+      background: var(--stone);
+      color: var(--ivory);
+      padding: 2rem;
+      border-radius: 1px;
+    }
+    .feat-card-sm {
+      background: var(--gold-lt);
+      color: var(--stone);
+      padding: 1.5rem 2rem;
+      border-radius: 1px;
+    }
+    .feat-card h4 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.3rem;
+      font-weight: 400;
+      margin-bottom: 0.5rem;
+    }
+    .feat-card p { font-size: 0.82rem; color: rgba(247,243,238,0.6); line-height: 1.6; }
+    .feat-card-sm h4 { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; font-weight: 600; margin-bottom: 0.3rem; }
+    .feat-card-sm p { font-size: 0.82rem; color: var(--warm-mid); }
+
+    /* ── TESTIMONIAL ── */
+    .testimonial {
+      background: linear-gradient(135deg, #f0ebe3 0%, #e8dfd4 100%);
+      padding: 6rem 2rem;
+      text-align: center;
+    }
+    .testimonial blockquote {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.4rem, 3vw, 2.2rem);
+      font-weight: 300;
+      font-style: italic;
+      color: var(--stone);
+      max-width: 750px;
+      margin: 0 auto 2rem;
+      line-height: 1.4;
+    }
+    .testimonial cite {
+      font-size: 0.75rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--warm-mid);
+      font-style: normal;
+    }
+    .stars {
+      color: var(--gold);
+      font-size: 0.85rem;
+      letter-spacing: 0.2em;
+      margin-bottom: 1.5rem;
+    }
+
+    /* ── LOCATION ── */
+    .location {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 480px;
+    }
+    .location-map {
+      background: var(--stone);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .location-text {
+      padding: 5rem 4rem;
+      background: var(--ivory);
+    }
+    .location-text h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.8rem, 3vw, 2.5rem);
+      font-weight: 300;
+      margin: 0.8rem 0 1.5rem;
+      line-height: 1.2;
+    }
+    .location-text p { color: var(--slate); font-size: 0.92rem; line-height: 1.8; margin-bottom: 1.5rem; }
+    .loc-item {
+      display: flex;
+      align-items: baseline;
+      gap: 1rem;
+      margin-bottom: 0.6rem;
+      font-size: 0.88rem;
+    }
+    .loc-item strong {
+      color: var(--gold);
+      font-weight: 500;
+      min-width: 80px;
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    .loc-item span { color: var(--slate); }
+
+    /* ── BOOKING ── */
+    .booking {
+      background: var(--stone);
+      padding: 7rem 2rem;
+      text-align: center;
+    }
+    .booking h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      font-weight: 300;
+      color: var(--ivory);
+      margin: 0.8rem 0 1.5rem;
+    }
+    .booking p { color: rgba(247,243,238,0.5); font-size: 0.95rem; max-width: 480px; margin: 0 auto 3rem; }
+    .booking-form {
+      display: flex;
+      gap: 0;
+      max-width: 700px;
+      margin: 0 auto 1.5rem;
+      flex-wrap: wrap;
+    }
+    .booking-form input, .booking-form select {
+      flex: 1;
+      min-width: 140px;
+      background: rgba(247,243,238,0.07);
+      border: 1px solid rgba(201,169,110,0.2);
+      border-right: none;
+      color: var(--ivory);
+      padding: 1rem 1.2rem;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.82rem;
+      outline: none;
+      transition: border-color 0.3s, background 0.3s;
+    }
+    .booking-form input:last-of-type, .booking-form select:last-of-type {
+      border-right: 1px solid rgba(201,169,110,0.2);
+    }
+    .booking-form input:focus, .booking-form select:focus {
+      background: rgba(201,169,110,0.1);
+      border-color: rgba(201,169,110,0.5);
+    }
+    .booking-form input::placeholder { color: rgba(247,243,238,0.3); }
+    .booking-form select { color: rgba(247,243,238,0.6); }
+    .booking-form select option { background: var(--stone); }
+    .booking-btn {
+      display: inline-block;
+      padding: 1rem 2.5rem;
+      background: var(--gold);
+      color: var(--ink);
+      font-size: 0.72rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      font-weight: 500;
+      border: none;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      border: 1px solid var(--gold);
+      transition: all 0.3s;
+      border-left: none;
+    }
+    .booking-btn:hover { background: var(--gold-lt); }
+    .booking-note { font-size: 0.75rem; color: rgba(247,243,238,0.3); letter-spacing: 0.05em; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--ink);
+      padding: 4rem 3rem 2rem;
+    }
+    .footer-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 4rem;
+      padding-bottom: 3rem;
+      border-bottom: 1px solid rgba(201,169,110,0.1);
+      margin-bottom: 2rem;
+    }
+    .footer-brand h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.4rem;
+      font-weight: 400;
+      color: var(--ivory);
+      letter-spacing: 0.08em;
+      margin-bottom: 0.8rem;
+    }
+    .footer-brand p {
+      color: rgba(247,243,238,0.35);
+      font-size: 0.83rem;
+      line-height: 1.75;
+      max-width: 280px;
+    }
+    .footer-col h4 {
+      font-size: 0.68rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1.2rem;
+      font-weight: 500;
+    }
+    .footer-col ul { list-style: none; }
+    .footer-col li { margin-bottom: 0.6rem; }
+    .footer-col a {
+      color: rgba(247,243,238,0.4);
+      text-decoration: none;
+      font-size: 0.85rem;
+      transition: color 0.3s;
+    }
+    .footer-col a:hover { color: var(--gold); }
+    .footer-bottom {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.75rem;
+      color: rgba(247,243,238,0.2);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { display: none; }
+      .features-inner { grid-template-columns: 1fr; gap: 2.5rem; }
+      .location { grid-template-columns: 1fr; }
+      .location-map { min-height: 280px; }
+      .location-text { padding: 3rem 2rem; }
+      .footer-inner { grid-template-columns: 1fr; gap: 2rem; }
+      .booking-form { flex-direction: column; }
+      .booking-form input, .booking-form select { border-right: 1px solid rgba(201,169,110,0.2) !important; }
+      .booking-btn { width: 100%; border-left: 1px solid var(--gold); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .scroll-line { animation: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav id="navbar">
+    <a href="#" class="nav-logo">Hôtel des Remparts</a>
+    <ul class="nav-links">
+      <li><a href="#chambres">Chambres</a></li>
+      <li><a href="#services">Services</a></li>
+      <li><a href="#acces">Accès</a></li>
+      <li><a href="#reservation" class="nav-cta">Réserver</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg">
+      <div class="hero-sky"></div>
+      <!-- Étoiles SVG -->
+      <svg class="hero-stars" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="120" cy="80" r="1" fill="white" opacity="0.6"/>
+        <circle cx="280" cy="40" r="0.8" fill="white" opacity="0.5"/>
+        <circle cx="450" cy="120" r="1.2" fill="white" opacity="0.7"/>
+        <circle cx="620" cy="30" r="0.8" fill="white" opacity="0.4"/>
+        <circle cx="750" cy="90" r="1" fill="white" opacity="0.6"/>
+        <circle cx="900" cy="55" r="1.4" fill="white" opacity="0.8"/>
+        <circle cx="1050" cy="100" r="0.7" fill="white" opacity="0.5"/>
+        <circle cx="1180" cy="35" r="1" fill="white" opacity="0.6"/>
+        <circle cx="1350" cy="75" r="1.2" fill="white" opacity="0.7"/>
+        <circle cx="200" cy="160" r="0.8" fill="white" opacity="0.4"/>
+        <circle cx="380" cy="200" r="1" fill="white" opacity="0.5"/>
+        <circle cx="520" cy="170" r="0.6" fill="white" opacity="0.3"/>
+        <circle cx="680" cy="140" r="1.1" fill="white" opacity="0.6"/>
+        <circle cx="860" cy="190" r="0.9" fill="white" opacity="0.5"/>
+        <circle cx="1000" cy="155" r="1.3" fill="white" opacity="0.7"/>
+        <circle cx="1250" cy="180" r="0.8" fill="white" opacity="0.4"/>
+        <circle cx="1400" cy="130" r="1" fill="white" opacity="0.6"/>
+        <!-- Golden star near moon -->
+        <circle cx="1050" cy="55" r="2" fill="#C9A96E" opacity="0.9"/>
+      </svg>
+
+      <!-- Lune -->
+      <svg style="position:absolute;top:60px;right:200px;width:60px;opacity:0.85" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="30" cy="30" r="28" fill="#E8D5B0" opacity="0.15"/>
+        <circle cx="30" cy="30" r="22" fill="#E8D5B0" opacity="0.18"/>
+        <circle cx="30" cy="30" r="16" fill="#E8D5B0" opacity="0.25"/>
+      </svg>
+
+      <!-- Silhouette des remparts de Carcassonne -->
+      <svg class="hero-ramparts" viewBox="0 0 1440 420" preserveAspectRatio="xMidYMax meet" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="skyGlow" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#5a2e0d" stop-opacity="0"/>
+            <stop offset="100%" stop-color="#3d1a08" stop-opacity="0.8"/>
+          </linearGradient>
+        </defs>
+
+        <!-- Sol -->
+        <rect x="0" y="360" width="1440" height="60" fill="#0d0806"/>
+
+        <!-- Murs d'enceinte arrière-plan (gauche) -->
+        <path d="M0,360 L0,240 L20,240 L20,220 L40,220 L40,240 L80,240 L80,210 L100,210 L100,240 L150,240 L150,230 L170,230 L170,240 L230,240 L230,360 Z" fill="#1a0c05"/>
+        <!-- Tours gauche fond -->
+        <rect x="60" y="175" width="35" height="65" rx="1" fill="#1a0c05"/>
+        <path d="M58,175 L60,165 L68,165 L68,175" fill="#1a0c05"/>
+        <path d="M67,175 L68,165 L75,165 L75,175" fill="#1a0c05"/>
+        <path d="M74,175 L75,165 L83,165 L83,175" fill="#1a0c05"/>
+        <path d="M82,175 L83,165 L93,165 L93,175" fill="#1a0c05"/>
+
+        <!-- Murs centraux - château comtal -->
+        <path d="M480,360 L480,200 L510,200 L510,180 L540,180 L540,200 L600,200 L600,190 L630,190 L630,200 L700,200 L700,360 Z" fill="#1f0e06"/>
+        <!-- Grande tour centrale -->
+        <rect x="550" y="130" width="70" height="90" rx="1" fill="#1f0e06"/>
+        <path d="M548,130 L550,115 L560,115 L560,130" fill="#1f0e06"/>
+        <path d="M558,130 L560,115 L568,115 L568,130" fill="#1f0e06"/>
+        <path d="M566,130 L568,115 L577,115 L577,130" fill="#1f0e06"/>
+        <path d="M575,130 L577,115 L586,115 L586,130" fill="#1f0e06"/>
+        <path d="M584,130 L586,115 L595,115 L595,130" fill="#1f0e06"/>
+        <path d="M593,130 L595,115 L605,115 L605,130" fill="#1f0e06"/>
+        <path d="M603,130 L605,115 L617,115 L617,130" fill="#1f0e06"/>
+        <!-- Flèche tour centrale -->
+        <polygon points="585,80 576,115 594,115" fill="#1f0e06"/>
+        <!-- Fenêtres tour -->
+        <rect x="571" y="148" width="14" height="18" rx="7" fill="#2e1508"/>
+        <rect x="590" y="148" width="14" height="18" rx="7" fill="#2e1508"/>
+
+        <!-- Remparts principaux avant-plan -->
+        <!-- Section gauche -->
+        <path d="M0,360 L0,290 L30,290 L30,275 L50,275 L50,290 L90,290 L90,278 L110,278 L110,290 L160,290 L160,280 L180,280 L180,290 L250,290 L250,360 Z" fill="#221009"/>
+        <!-- Tours section gauche -->
+        <rect x="30" y="248" width="42" height="52" rx="1" fill="#221009"/>
+        <path d="M28,248 L30,236 L39,236 L39,248" fill="#221009"/>
+        <path d="M38,248 L39,236 L47,236 L47,248" fill="#221009"/>
+        <path d="M46,248 L47,236 L54,236 L54,248" fill="#221009"/>
+        <path d="M53,248 L54,236 L62,236 L62,248" fill="#221009"/>
+        <path d="M61,248 L62,236 L72,236 L72,248" fill="#221009"/>
+        <!-- Fenêtre tour gauche -->
+        <rect x="42" y="262" width="10" height="14" rx="5" fill="#2e1508"/>
+
+        <!-- Section milieu-gauche -->
+        <path d="M250,360 L250,300 L280,300 L280,285 L300,285 L300,300 L380,300 L380,288 L400,288 L400,300 L450,300 L450,360 Z" fill="#221009"/>
+        <rect x="280" y="258" width="45" height="55" rx="1" fill="#221009"/>
+        <path d="M278,258 L280,246 L290,246 L290,258" fill="#221009"/>
+        <path d="M289,258 L290,246 L298,246 L298,258" fill="#221009"/>
+        <path d="M297,258 L298,246 L306,246 L306,258" fill="#221009"/>
+        <path d="M305,258 L306,246 L315,246 L315,258" fill="#221009"/>
+        <path d="M314,258 L315,246 L325,246 L325,258" fill="#221009"/>
+        <rect x="290" y="272" width="11" height="16" rx="5" fill="#2e1508"/>
+        <rect x="307" y="272" width="11" height="16" rx="5" fill="#2e1508"/>
+
+        <!-- Porte Narbonnaise (centre-gauche) -->
+        <path d="M450,360 L450,295 L475,295 L475,295 L475,360 Z" fill="#221009"/>
+        <rect x="475" y="240" width="55" height="120" fill="#221009"/>
+        <!-- Arche de la porte -->
+        <path d="M478,360 L478,290 Q502,265 526,290 L526,360" fill="#1a0c05"/>
+        <!-- Tours de la porte -->
+        <rect x="462" y="230" width="35" height="130" rx="1" fill="#1d0d06"/>
+        <rect x="520" y="230" width="35" height="130" rx="1" fill="#1d0d06"/>
+        <path d="M460,230 L462,218 L472,218 L472,230" fill="#1d0d06"/>
+        <path d="M471,230 L472,218 L480,218 L480,230" fill="#1d0d06"/>
+        <path d="M479,230 L480,218 L488,218 L488,230" fill="#1d0d06"/>
+        <path d="M487,230 L488,218 L496,218 L496,230" fill="#1d0d06"/>
+        <path d="M518,230 L520,218 L530,218 L530,230" fill="#1d0d06"/>
+        <path d="M529,230 L530,218 L538,218 L538,230" fill="#1d0d06"/>
+        <path d="M537,230 L538,218 L546,218 L546,230" fill="#1d0d06"/>
+        <path d="M545,230 L546,218 L555,218 L555,230" fill="#1d0d06"/>
+
+        <!-- Section milieu-droit -->
+        <path d="M555,360 L555,300 L600,300 L600,288 L620,288 L620,300 L700,300 L700,285 L720,285 L720,300 L780,300 L780,360 Z" fill="#221009"/>
+        <rect x="640" y="255" width="48" height="55" rx="1" fill="#221009"/>
+        <path d="M638,255 L640,243 L650,243 L650,255" fill="#221009"/>
+        <path d="M649,255 L650,243 L658,243 L658,255" fill="#221009"/>
+        <path d="M657,255 L658,243 L666,243 L666,255" fill="#221009"/>
+        <path d="M665,255 L666,243 L675,243 L675,255" fill="#221009"/>
+        <path d="M674,255 L675,243 L685,243 L685,255" fill="#221009"/>
+        <path d="M684,255 L685,243 L688,243 L688,255" fill="#221009"/>
+        <rect x="650" y="270" width="11" height="16" rx="5" fill="#2e1508"/>
+        <rect x="667" y="270" width="11" height="16" rx="5" fill="#2e1508"/>
+
+        <!-- Section droite -->
+        <path d="M780,360 L780,290 L820,290 L820,278 L840,278 L840,290 L920,290 L920,282 L940,282 L940,290 L1020,290 L1020,360 Z" fill="#221009"/>
+        <rect x="830" y="248" width="42" height="52" rx="1" fill="#221009"/>
+        <path d="M828,248 L830,236 L839,236 L839,248" fill="#221009"/>
+        <path d="M838,248 L839,236 L847,236 L847,248" fill="#221009"/>
+        <path d="M846,248 L847,236 L855,236 L855,248" fill="#221009"/>
+        <path d="M854,248 L855,236 L863,236 L863,248" fill="#221009"/>
+        <path d="M862,248 L863,236 L872,236 L872,248" fill="#221009"/>
+        <rect x="840" y="262" width="10" height="14" rx="5" fill="#2e1508"/>
+
+        <!-- Section extrême droite -->
+        <path d="M1020,360 L1020,295 L1060,295 L1060,283 L1080,283 L1080,295 L1150,295 L1150,285 L1170,285 L1170,295 L1250,295 L1250,360 Z" fill="#221009"/>
+        <rect x="1080" y="255" width="45" height="50" rx="1" fill="#221009"/>
+        <path d="M1078,255 L1080,243 L1090,243 L1090,255" fill="#221009"/>
+        <path d="M1089,255 L1090,243 L1098,243 L1098,255" fill="#221009"/>
+        <path d="M1097,255 L1098,243 L1106,243 L1106,255" fill="#221009"/>
+        <path d="M1105,255 L1106,243 L1115,243 L1115,255" fill="#221009"/>
+        <path d="M1114,255 L1115,243 L1125,243 L1125,255" fill="#221009"/>
+        <rect x="1090" y="268" width="11" height="15" rx="5" fill="#2e1508"/>
+        <rect x="1106" y="268" width="11" height="15" rx="5" fill="#2e1508"/>
+
+        <!-- Prolongement droit -->
+        <path d="M1250,360 L1250,298 L1290,298 L1290,285 L1310,285 L1310,298 L1380,298 L1380,308 L1440,308 L1440,360 Z" fill="#221009"/>
+
+        <!-- Lueur dorée au bas des remparts (lumière depuis la ville) -->
+        <path d="M0,360 Q360,320 720,340 Q1080,355 1440,320 L1440,420 L0,420 Z" fill="#3d1a08" opacity="0.5"/>
+
+        <!-- Quelques lumières de fenêtres -->
+        <rect x="100" y="295" width="6" height="8" fill="#C9A96E" opacity="0.3"/>
+        <rect x="350" y="305" width="6" height="8" fill="#C9A96E" opacity="0.25"/>
+        <rect x="800" y="300" width="6" height="8" fill="#C9A96E" opacity="0.3"/>
+        <rect x="1100" y="295" width="6" height="8" fill="#C9A96E" opacity="0.2"/>
+        <rect x="1300" y="303" width="6" height="8" fill="#C9A96E" opacity="0.25"/>
+      </svg>
+    </div>
+
+    <div class="hero-content">
+      <p class="hero-eyebrow">Carcassonne · Depuis 1987</p>
+      <h1 class="hero-title">Hôtel des<br><em>Remparts</em></h1>
+      <p class="hero-subtitle">Au pied de la Cité médiévale</p>
+      <a href="#reservation" class="hero-btn">Réserver votre séjour</a>
+    </div>
+
+    <div class="hero-scroll">
+      <div class="scroll-line"></div>
+      <span>Découvrir</span>
+    </div>
+  </section>
+
+  <!-- INTRO -->
+  <section class="intro">
+    <span class="section-label">Notre histoire</span>
+    <h2>Un refuge de <em>caractère</em>,<br>à deux pas du Moyen Âge</h2>
+    <p>
+      Niché dans la ville basse, à quelques minutes à pied de la Porte Narbonnaise, 
+      l'Hôtel des Remparts vous accueille dans une bâtisse du XIX&nbsp;e siècle 
+      entièrement restaurée. Pierre apparente, tomettes et lumière du Midi — 
+      chaque détail raconte une histoire.
+    </p>
+    <div class="gold-rule"></div>
+  </section>
+
+  <!-- ROOMS -->
+  <section class="rooms-section" id="chambres">
+    <div class="rooms-header">
+      <span class="section-label" style="color:var(--gold)">Hébergement</span>
+      <h2>Nos chambres</h2>
+    </div>
+    <div class="rooms-grid">
+      <div class="room-card">
+        <span class="room-icon">🏛</span>
+        <h3>Chambre Citadelle</h3>
+        <p>Vue dégagée sur les tours de la Cité. Literie en lin naturel, salle de bain en pierre reconstituée, petit-déjeuner inclus.</p>
+        <p class="room-price">À partir de 89 € <span>/ nuit</span></p>
+      </div>
+      <div class="room-card">
+        <span class="room-icon">🌿</span>
+        <h3>Chambre Jardin</h3>
+        <p>Ouvre sur notre cour ombragée. Fraîche en été, calme en toutes saisons. Idéale pour les séjours de détente prolongés.</p>
+        <p class="room-price">À partir de 79 € <span>/ nuit</span></p>
+      </div>
+      <div class="room-card">
+        <span class="room-icon">👑</span>
+        <h3>Suite Languedoc</h3>
+        <p>Notre chambre la plus spacieuse. Salon séparé, baignoire îlot, terrasse privée avec vue sur les toits et les remparts.</p>
+        <p class="room-price">À partir de 145 € <span>/ nuit</span></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="features" id="services">
+    <div class="features-inner">
+      <div class="features-text">
+        <span class="section-label">L'essentiel</span>
+        <h2>Un accueil <em>sincère</em>,<br>des services sur mesure</h2>
+        <p>
+          Nous sommes un hôtel familial — douze chambres, une équipe de cinq personnes, 
+          et un seul objectif : que vous repartiez en vous souvenant du bien-être plus que 
+          de l'itinéraire.
+        </p>
+        <ul class="feature-list">
+          <li>Petit-déjeuner maison chaque matin (produits locaux)</li>
+          <li>Parking sécurisé à 80 m, accès navette Cité</li>
+          <li>Bagagerie, location de vélos, visites guidées</li>
+          <li>Wi-Fi haut débit dans toutes les chambres</li>
+          <li>Animaux de compagnie acceptés (sur demande)</li>
+          <li>Réception disponible de 7h à 22h</li>
+        </ul>
+      </div>
+      <div class="features-visual">
+        <div class="feat-card">
+          <h4>Le petit-déjeuner</h4>
+          <p>Confitures artisanales de l'Aude, pain de la boulangerie Sarraut, fromages du marché du samedi. Un moment pour bien commencer.</p>
+        </div>
+        <div class="feat-card-sm">
+          <h4>10 min à pied</h4>
+          <p>de la Porte Narbonnaise & du canal du Midi</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIAL -->
+  <section class="testimonial">
+    <div class="stars">★★★★★</div>
+    <blockquote>
+      "On a eu l'impression d'être les invités de quelqu'un, 
+       pas d'un hôtel. La vue depuis la chambre sur les remparts 
+       illuminés le soir — on ne l'oubliera pas."
+    </blockquote>
+    <cite>Marie-Claire & Bernard · Lyon · Août 2024</cite>
+  </section>
+
+  <!-- LOCATION -->
+  <section class="location" id="acces">
+    <div class="location-map">
+      <!-- Carte stylisée SVG de Carcassonne -->
+      <svg viewBox="0 0 360 280" style="width:100%;max-width:340px;opacity:0.85" xmlns="http://www.w3.org/2000/svg">
+        <!-- Fond sombre -->
+        <rect width="360" height="280" fill="#150a04"/>
+        <!-- Canal du Midi (ligne bleue) -->
+        <path d="M0,200 Q90,195 180,205 Q270,215 360,200" stroke="#4a7fa5" stroke-width="3" fill="none" opacity="0.5"/>
+        <text x="60" y="218" font-family="'Cormorant Garamond',serif" font-size="8" fill="#4a7fa5" opacity="0.7" font-style="italic">Canal du Midi</text>
+        <!-- Aude (rivière) -->
+        <path d="M160,0 Q170,80 185,160 Q195,220 210,280" stroke="#4a7fa5" stroke-width="2" fill="none" opacity="0.35"/>
+        <!-- Rues principales -->
+        <line x1="0" y1="160" x2="360" y2="160" stroke="#3d2010" stroke-width="1.5" opacity="0.6"/>
+        <line x1="0" y1="120" x2="360" y2="120" stroke="#3d2010" stroke-width="1" opacity="0.4"/>
+        <line x1="180" y1="0" x2="180" y2="280" stroke="#3d2010" stroke-width="1.5" opacity="0.6"/>
+        <line x1="100" y1="0" x2="100" y2="280" stroke="#3d2010" stroke-width="1" opacity="0.3"/>
+        <line x1="260" y1="0" x2="260" y2="280" stroke="#3d2010" stroke-width="1" opacity="0.3"/>
+        <line x1="0" y1="80" x2="360" y2="80" stroke="#3d2010" stroke-width="0.8" opacity="0.25"/>
+        <!-- La Cité médiévale (ellipse) -->
+        <ellipse cx="258" cy="88" rx="55" ry="40" fill="none" stroke="#C9A96E" stroke-width="1.5" stroke-dasharray="4,2" opacity="0.7"/>
+        <ellipse cx="258" cy="88" rx="42" ry="30" fill="#2e1508" opacity="0.8"/>
+        <!-- Tours de la cité (points) -->
+        <circle cx="230" cy="72" r="3" fill="#C9A96E" opacity="0.8"/>
+        <circle cx="258" cy="60" r="3" fill="#C9A96E" opacity="0.8"/>
+        <circle cx="286" cy="72" r="3" fill="#C9A96E" opacity="0.8"/>
+        <circle cx="290" cy="95" r="3" fill="#C9A96E" opacity="0.8"/>
+        <circle cx="270" cy="112" r="3" fill="#C9A96E" opacity="0.8"/>
+        <circle cx="246" cy="112" r="3" fill="#C9A96E" opacity="0.8"/>
+        <circle cx="228" cy="95" r="3" fill="#C9A96E" opacity="0.8"/>
+        <text x="240" y="92" font-family="'Cormorant Garamond',serif" font-size="9" fill="#C9A96E" opacity="0.9" font-style="italic">La Cité</text>
+        <!-- Marqueur de l'hôtel -->
+        <circle cx="148" cy="148" r="8" fill="#C9A96E" opacity="0.95"/>
+        <circle cx="148" cy="148" r="14" fill="none" stroke="#C9A96E" stroke-width="1" opacity="0.4"/>
+        <circle cx="148" cy="148" r="20" fill="none" stroke="#C9A96E" stroke-width="0.5" opacity="0.2"/>
+        <text x="163" y="145" font-family="'Cormorant Garamond',serif" font-size="10" fill="#E8D5B0" font-weight="600">Hôtel des Remparts</text>
+        <text x="163" y="158" font-family="'Inter',sans-serif" font-size="7" fill="#8C6D52">Ville basse</text>
+        <!-- Labels quartiers -->
+        <text x="15" y="135" font-family="'Cormorant Garamond',serif" font-size="8" fill="#6B7280" opacity="0.6" font-style="italic">Bastide</text>
+        <text x="15" y="175" font-family="'Cormorant Garamond',serif" font-size="8" fill="#6B7280" opacity="0.6" font-style="italic">Saint-Vincent</text>
+        <!-- Gare (carré) -->
+        <rect x="82" y="190" width="12" height="10" fill="none" stroke="#6B7280" stroke-width="1" opacity="0.5"/>
+        <text x="98" y="200" font-family="'Inter',sans-serif" font-size="7" fill="#6B7280" opacity="0.6">Gare SNCF</text>
+        <!-- Nord -->
+        <text x="330" y="25" font-family="'Inter',sans-serif" font-size="9" fill="#C9A96E" opacity="0.6" font-weight="500">N</text>
+        <line x1="335" y1="28" x2="335" y2="40" stroke="#C9A96E" stroke-width="1" opacity="0.4"/>
+      </svg>
+    </div>
+    <div class="location-text">
+      <span class="section-label">Nous trouver</span>
+      <h2>Au cœur de Carcassonne,<br>à portée de tout</h2>
+      <p>
+        Dans la ville basse, à 10 minutes à pied de la Cité médiévale 
+        et du canal du Midi. Bien desservi par les transports, avec 
+        une navette gratuite vers les remparts en saison.
+      </p>
+      <div class="loc-item"><strong>Adresse</strong><span>14 rue des Troubadours, 11000 Carcassonne</span></div>
+      <div class="loc-item"><strong>Téléphone</strong><span>+33 (0)4 68 25 XX XX</span></div>
+      <div class="loc-item"><strong>Email</strong><span>bonjour@hotel-remparts-carcassonne.fr</span></div>
+      <div class="loc-item" style="margin-top:0.8rem"><strong>La Cité</strong><span>10 min à pied</span></div>
+      <div class="loc-item"><strong>Gare SNCF</strong><span>12 min à pied</span></div>
+      <div class="loc-item"><strong>Aéroport</strong><span>10 min en taxi (Salvaza)</span></div>
+    </div>
+  </section>
+
+  <!-- BOOKING -->
+  <section class="booking" id="reservation">
+    <span class="section-label" style="color:var(--gold)">Réservation directe</span>
+    <h2>Planifiez votre séjour</h2>
+    <p>Réservez directement sur notre site — meilleur tarif garanti, sans frais de service.</p>
+    <div class="booking-form">
+      <input type="date" placeholder="Arrivée" aria-label="Date d'arrivée">
+      <input type="date" placeholder="Départ" aria-label="Date de départ">
+      <select aria-label="Type de chambre">
+        <option value="" disabled selected>Chambre</option>
+        <option>Citadelle</option>
+        <option>Jardin</option>
+        <option>Suite Languedoc</option>
+      </select>
+      <button class="booking-btn" type="button">Vérifier</button>
+    </div>
+    <p class="booking-note">Ou appelez-nous au +33 (0)4 68 25 XX XX · 7h–22h</p>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <h3>Hôtel des Remparts</h3>
+        <p>Un hôtel familial et indépendant à Carcassonne, depuis 1987. 12 chambres, une équipe attentionnée, une ville millénaire à explorer.</p>
+      </div>
+      <div class="footer-col">
+        <h4>L'hôtel</h4>
+        <ul>
+          <li><a href="#chambres">Chambres & suites</a></li>
+          <li><a href="#services">Services</a></li>
+          <li><a href="#acces">Accès & situation</a></li>
+          <li><a href="#">Politique annulation</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Aux alentours</h4>
+        <ul>
+          <li><a href="#">La Cité médiévale</a></li>
+          <li><a href="#">Canal du Midi</a></li>
+          <li><a href="#">Châteaux cathares</a></li>
+          <li><a href="#">Vignobles de l'Aude</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2025 Hôtel des Remparts · Carcassonne</span>
+      <span>Mentions légales · Confidentialité</span>
+    </div>
+  </footer>
+
+  <script>
+    // Nav scroll effect
+    const nav = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 60);
+    });
+
+    // Date defaults
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const afterTomorrow = new Date(today);
+    afterTomorrow.setDate(afterTomorrow.getDate() + 3);
+    const fmt = d => d.toISOString().split('T')[0];
+    const inputs = document.querySelectorAll('.booking-form input[type="date"]');
+    if (inputs[0]) inputs[0].value = fmt(tomorrow);
+    if (inputs[1]) inputs[1].value = fmt(afterTomorrow);
+    if (inputs[0]) inputs[0].min = fmt(today);
+  </script>
+</body>
+</html>
